@@ -1,0 +1,3 @@
+The Hall & Party Plot Management System is a web-based application developed using the Django framework to automate and manage all aspects of hall and party plot bookings for events such as weddings, birthdays, corporate functions, and other social gatherings.
+
+This system aims to simplify the entire venue booking process for both customers and administrators. It provides a seamless interface to search, book, manage, and review various venues with ease. By incorporating modules such as amenities management, payment tracking, feedback collection, staff assignment, and notifications, the system ensures a complete event booking experience.
