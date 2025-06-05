@@ -1,0 +1,189 @@
+{% extends 'hall_app/base.html' %}
+{% load static %}
+
+{% block title %}About Us - Hall Management System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-primary text-white py-5 mb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 text-center">
+                <h1>About Us</h1>
+                <p class="lead">Learn more about our hall management services</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <h2>Our Story</h2>
+                <p>Founded in 2020, Hall Management System was created with a simple mission: to make booking event spaces easier for everyone. We recognized the challenges people faced when trying to find and book the perfect venue for their special occasions.</p>
+                <p>What started as a small local service has now grown into a comprehensive platform connecting venue owners with customers looking for the perfect space for their events.</p>
+                <p>Our team is dedicated to providing exceptional service and ensuring that every event hosted in our halls is a memorable one.</p>
+            </div>
+            <div class="col-md-6 mb-4">
+                <img src="{% static 'images/about-us.jpg' %}" alt="About Us" class="img-fluid rounded shadow" onerror="this.src='https://via.placeholder.com/600x400?text=About+Us'">
+            </div>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-6 order-md-2 mb-4">
+                <h2>Our Mission</h2>
+                <p>Our mission is to simplify the process of finding and booking event spaces. We believe that everyone deserves to have a stress-free experience when planning their special events.</p>
+                <p>We strive to provide a platform that offers:</p>
+                <ul>
+                    <li>Transparent pricing with no hidden fees</li>
+                    <li>Detailed information about each venue</li>
+                    <li>Easy booking and payment process</li>
+                    <li>Excellent customer support</li>
+                    <li>Quality assurance for all listed venues</li>
+                </ul>
+            </div>
+            <div class="col-md-6 order-md-1 mb-4">
+                <img src="{% static 'images/our-mission.jpg' %}" alt="Our Mission" class="img-fluid rounded shadow" onerror="this.src='https://via.placeholder.com/600x400?text=Our+Mission'">
+            </div>
+        </div>
+        
+        <!-- Team Section -->
+        <div class="row mt-5">
+            <div class="col-12 text-center mb-4">
+                <h2>Our Team</h2>
+                <p class="text-muted">Meet the people behind Hall Management System</p>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{% static 'images/team-1.jpg' %}" class="card-img-top" alt="Team Member" onerror="this.src='https://via.placeholder.com/300x300?text=Team+Member'">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Rajesh Sharma</h5>
+                        <p class="text-muted">Founder & CEO</p>
+                        <p class="card-text">With over 15 years of experience in the hospitality industry, Rajesh leads our team with passion and vision.</p>
+                        <div class="social-icons">
+                            <a href="#" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="text-primary me-2"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-primary"><i class="fab fa-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{% static 'images/team-2.jpg' %}" class="card-img-top" alt="Team Member" onerror="this.src='https://via.placeholder.com/300x300?text=Team+Member'">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Priya Patel</h5>
+                        <p class="text-muted">Operations Manager</p>
+                        <p class="card-text">Priya ensures that all our operations run smoothly and our customers receive the best service possible.</p>
+                        <div class="social-icons">
+                            <a href="#" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="text-primary me-2"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-primary"><i class="fab fa-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{% static 'images/team-3.jpg' %}" class="card-img-top" alt="Team Member" onerror="this.src='https://via.placeholder.com/300x300?text=Team+Member'">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Amit Verma</h5>
+                        <p class="text-muted">Customer Relations</p>
+                        <p class="card-text">Amit is dedicated to ensuring that every customer has a positive experience with our service.</p>
+                        <div class="social-icons">
+                            <a href="#" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="text-primary me-2"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-primary"><i class="fab fa-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2>What Our Customers Say</h2>
+                <p class="text-muted">Read testimonials from satisfied clients</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'images/avatar1.jpg' %}" alt="Customer" class="rounded-circle" width="50" onerror="this.src='{% static 'images/avatar-placeholder.jpg' %}'">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Amit Patel</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"Great service, very satisfied! The hall was perfect for our wedding reception. The staff was professional and helped us with all our requirements."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'images/avatar2.jpg' %}" alt="Customer" class="rounded-circle" width="50" onerror="this.src='{% static 'images/avatar-placeholder.jpg' %}'">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Ravi Mehta</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"Good experience, but the wait was long. The staff was very helpful and accommodating. The venue was beautiful and our guests loved it."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'images/avatar3.jpg' %}" alt="Customer" class="rounded-circle" width="50" onerror="this.src='{% static 'images/avatar-placeholder.jpg' %}'">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Kiran Patel</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"Excellent service, I am very happy with the overall experience! Will definitely book again. The booking process was smooth and hassle-free."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'hall_app/base.html' %}
+{% load static %}
+
+{% block title %}Booking Confirmation - Hall Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <div class="confirmation-icon mb-3">
+                <i class="fas fa-check-circle text-success fa-5x"></i>
+            </div>
+            <h1>Booking Confirmed!</h1>
+            <p class="lead">Your booking has been successfully confirmed. Thank you for choosing our service.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Booking Details</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Booking Information</h5>
+                            <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+                            <p><strong>Hall:</strong> {{ booking.hall.hall_name }}</p>
+                            <p><strong>Event Date:</strong> {{ booking.event_date }}</p>
+                            <p><strong>Duration:</strong> {{ booking.total_hours }} hours</p>
+                            <p><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-success">Confirmed</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if booking.hall.primary_image %}
+                                <img src="{{ booking.hall.primary_image.image.url }}" class="img-fluid rounded" alt="{{ booking.hall.hall_name }}">
+                            {% else %}
+                                <img src="{% static 'images/hall-placeholder.jpg' %}" class="img-fluid rounded" alt="{{ booking.hall.hall_name }}" onerror="this.src='https://via.placeholder.com/400x300?text=Hall+Image'">
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Customer Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Name:</strong> {{ booking.customer.get_full_name }}</p>
+                            <p><strong>Email:</strong> {{ booking.customer.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Contact:</strong> {{ booking.customer.profile.contact_number }}</p>
+                            <p><strong>Address:</strong> {{ booking.customer.profile.address }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if catering %}
+                    <h5 class="mb-3">Catering Details</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <p><strong>Catering Service:</strong> {{ catering.catering_service.service_name }}</p>
+                            <p><strong>Number of People:</strong> {{ catering.number_of_people }}</p>
+                            <p><strong>Catering Cost:</strong> ₹{{ catering.total_cost }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <h5 class="mb-3">Payment Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <p><strong>Payment ID:</strong> {{ payment.payment_id }}</p>
+                            <p><strong>Payment Date:</strong> {{ payment.payment_date }}</p>
+                            <p><strong>Payment Method:</strong> {{ payment.get_payment_method_display }}</p>
+                            <p><strong>Amount Paid:</strong> ₹{{ payment.amount_paid }}</p>
+                            <p><strong>Payment Status:</strong> <span class="badge bg-success">{{ payment.get_payment_status_display }}</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-info">
+                                <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i> Important Information</h5>
+                                <p>A confirmation email has been sent to your registered email address with all the booking details.</p>
+                                <hr>
+                                <p class="mb-0">If you need to cancel or modify your booking, please contact us at least 48 hours before the event date.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-12 text-center">
+                            <a href="{% url 'dashboard' %}" class="btn btn-primary me-2">Go to Dashboard</a>
+                            <a href="#" class="btn btn-outline-primary" onclick="window.print()"><i class="fas fa-print me-2"></i> Print Receipt</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'hall_app/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Hall Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_hall_list' %}">Halls</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ title }}</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i> Please correct the errors below.
+                        </div>
+                        {% endif %}
+                        
+                        <h5 class="mb-3">Basic Information</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ hall_form.hall_name.id_for_label }}" class="form-label">Hall Name</label>
+                                {{ hall_form.hall_name|add_class:"form-control" }}
+                                {% if hall_form.hall_name.errors %}
+                                <div class="text-danger">
+                                    {{ hall_form.hall_name.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ hall_form.capacity.id_for_label }}" class="form-label">Capacity</label>
+                                {{ hall_form.capacity|add_class:"form-control" }}
+                                {% if hall_form.capacity.errors %}
+                                <div class="text-danger">
+                                    {{ hall_form.capacity.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ hall_form.price_per_hour.id_for_label }}" class="form-label">Price Per Hour (₹)</label>
+                                {{ hall_form.price_per_hour|add_class:"form-control" }}
+                                {% if hall_form.price_per_hour.errors %}
+                                <div class="text-danger">
+                                    {{ hall_form.price_per_hour.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ hall_form.contact_number.id_for_label }}" class="form-label">Contact Number</label>
+                                {{ hall_form.contact_number|add_class:"form-control" }}
+                                {% if hall_form.contact_number.errors %}
+                                <div class="text-danger">
+                                    {{ hall_form.contact_number.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ hall_form.description.id_for_label }}" class="form-label">Description</label>
+                            {{ hall_form.description|add_class:"form-control" }}
+                            {% if hall_form.description.errors %}
+                            <div class="text-danger">
+                                {{ hall_form.description.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ hall_form.address.id_for_label }}" class="form-label">Address</label>
+                            {{ hall_form.address|add_class:"form-control" }}
+                            {% if hall_form.address.errors %}
+                            <div class="text-danger">
+                                {{ hall_form.address.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4 form-check">
+                            {{ hall_form.is_active|add_class:"form-check-input" }}
+                            <label for="{{ hall_form.is_active.id_for_label }}" class="form-check-label">Active</label>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3">Hall Images</h5>
+                        {{ image_formset.management_form }}
+                        <div id="image-formset">
+                            {% for form in image_formset %}
+                            <div class="image-form mb-3 p-3 border rounded">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <label for="{{ form.image.id_for_label }}" class="form-label">Image</label>
+                                        {{ form.image|add_class:"form-control" }}
+                                        {% if form.image.errors %}
+                                        <div class="text-danger">
+                                            {{ form.image.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check mt-4">
+                                            {{ form.is_primary|add_class:"form-check-input" }}
+                                            <label for="{{ form.is_primary.id_for_label }}" class="form-check-label">Primary Image</label>
+                                        </div>
+                                        {% if form.instance.pk %}
+                                        <div class="form-check mt-2">
+                                            {{ form.DELETE|add_class:"form-check-input" }}
+                                            <label for="{{ form.DELETE.id_for_label }}" class="form-check-label text-danger">Delete</label>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3">Hall Amenities</h5>
+                        {{ amenity_formset.management_form }}
+                        <div id="amenity-formset">
+                            {% for form in amenity_formset %}
+                            <div class="amenity-form mb-3 p-3 border rounded">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <label for="{{ form.amenity.id_for_label }}" class="form-label">Amenity</label>
+                                        {{ form.amenity|add_class:"form-control" }}
+                                        {% if form.amenity.errors %}
+                                        <div class="text-danger">
+                                            {{ form.amenity.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantity</label>
+                                        {{ form.quantity|add_class:"form-control" }}
+                                        {% if form.quantity.errors %}
+                                        <div class="text-danger">
+                                            {{ form.quantity.errors }}
+                                        </div>
+                                        {% endif %}
+                                        {% if form.instance.pk %}
+                                        <div class="form-check mt-2">
+                                            {{ form.DELETE|add_class:"form-check-input" }}
+                                            <label for="{{ form.DELETE.id_for_label }}" class="form-check-label text-danger">Delete</label>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'admin_hall_list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Hall</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle primary image selection (only one can be primary)
+        const primaryCheckboxes = document.querySelectorAll('input[name$="-is_primary"]');
+        primaryCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    primaryCheckboxes.forEach(cb => {
+                        if (cb !== this) {
+                            cb.checked = false;
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

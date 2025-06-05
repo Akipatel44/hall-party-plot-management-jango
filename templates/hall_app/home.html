@@ -1,0 +1,226 @@
+{% extends 'hall_app/base.html' %}
+{% load static %}
+
+{% block title %}Home - Hall Management System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 text-center">
+                <h1>Find the Perfect Venue for Your Event</h1>
+                <p class="lead">Book party halls, banquet halls, and event spaces with ease</p>
+                <div class="search-box bg-white p-4 rounded shadow">
+                    <form action="{% url 'hall_list' %}" method="GET">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="date" name="event_date" class="form-control" placeholder="Event Date">
+                            </div>
+                            <div class="col-md-4">
+                                <select name="min_capacity" class="form-control">
+                                    <option value="">Select Capacity</option>
+                                    <option value="100">Up to 100 guests</option>
+                                    <option value="200">Up to 200 guests</option>
+                                    <option value="300">Up to 300 guests</option>
+                                    <option value="400">Up to 400 guests</option>
+                                    <option value="500">500+ guests</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Halls -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2>Featured Halls</h2>
+                <p class="text-muted">Discover our most popular event spaces</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for hall in halls %}
+            <div class="col-md-4 mb-4">
+                <div class="card hall-card">
+                    {% if hall.primary_image %}
+                        <img src="{{ hall.primary_image.image.url }}" class="card-img-top" alt="{{ hall.hall_name }}">
+                    {% else %}
+                        <img src="{% static 'images/hall-placeholder.jpg' %}" class="card-img-top" alt="{{ hall.hall_name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ hall.hall_name }}</h5>
+                        <p class="card-text hall-capacity">
+                            <i class="fas fa-users"></i> Capacity: {{ hall.capacity }} people
+                        </p>
+                        <p class="card-text hall-price">
+                            <i class="fas fa-rupee-sign"></i> ₹{{ hall.price_per_hour }} per hour
+                        </p>
+                        <a href="{% url 'hall_detail' hall.hall_id %}" class="btn btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No halls available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <a href="{% url 'hall_list' %}" class="btn btn-primary">View All Halls</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2>How It Works</h2>
+                <p class="text-muted">Book your perfect venue in 3 simple steps</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 text-center mb-4">
+                <div class="bg-white p-4 rounded shadow h-100">
+                    <div class="step-icon mb-3">
+                        <i class="fas fa-search fa-3x text-primary"></i>
+                    </div>
+                    <h4>Find a Hall</h4>
+                    <p>Search and filter halls based on your requirements</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="bg-white p-4 rounded shadow h-100">
+                    <div class="step-icon mb-3">
+                        <i class="fas fa-calendar-check fa-3x text-primary"></i>
+                    </div>
+                    <h4>Book a Date</h4>
+                    <p>Select your preferred date and time</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="bg-white p-4 rounded shadow h-100">
+                    <div class="step-icon mb-3">
+                        <i class="fas fa-credit-card fa-3x text-primary"></i>
+                    </div>
+                    <h4>Make Payment</h4>
+                    <p>Secure your booking with easy payment options</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2>What Our Customers Say</h2>
+                <p class="text-muted">Read testimonials from satisfied clients</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'images/avatar1.jpg' %}" alt="Customer" class="rounded-circle" width="50" onerror="this.src='{% static 'images/avatar-placeholder.jpg' %}'">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Amit Patel</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"Great service, very satisfied! The hall was perfect for our wedding reception."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'images/avatar2.jpg' %}" alt="Customer" class="rounded-circle" width="50" onerror="this.src='{% static 'images/avatar-placeholder.jpg' %}'">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Ravi Mehta</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"Good experience, but the wait was long. The staff was very helpful and accommodating."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <img src="{% static 'images/avatar3.jpg' %}" alt="Customer" class="rounded-circle" width="50" onerror="this.src='{% static 'images/avatar-placeholder.jpg' %}'">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-0">Kiran Patel</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"Excellent service, I am very happy with the overall experience! Will definitely book again."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h2>Subscribe to Our Newsletter</h2>
+                <p class="mb-4">Get updates on new halls and special offers</p>
+                <form action="#" method="POST" class="row g-3 justify-content-center">
+                    {% csrf_token %}
+                    <div class="col-md-8">
+                        <input type="email" class="form-control form-control-lg" placeholder="Your Email Address" required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-light btn-lg w-100">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

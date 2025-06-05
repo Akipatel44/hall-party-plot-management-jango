@@ -1,0 +1,103 @@
+{% extends 'hall_app/base.html' %}
+{% load static %}
+
+{% block title %}Halls - Hall Management System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-primary text-white py-5 mb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 text-center">
+                <h1>Available Halls</h1>
+                <p class="lead">Find the perfect venue for your event</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Filter Halls</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'hall_list' %}">
+                        <div class="mb-3">
+                            <label for="event_date" class="form-label">Event Date</label>
+                            <input type="date" name="event_date" id="event_date" class="form-control" value="{{ request.GET.event_date|default:'' }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="min_capacity" class="form-label">Minimum Capacity</label>
+                            <input type="number" name="min_capacity" id="min_capacity" class="form-control" value="{{ request.GET.min_capacity|default:'' }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="max_price" class="form-label">Maximum Price (per hour)</label>
+                            <input type="number" name="max_price" id="max_price" class="form-control" value="{{ request.GET.max_price|default:'' }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Amenities</label>
+                            {% for choice in form.amenities.field.choices %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="amenities" value="{{ choice.0 }}" id="amenity_{{ choice.0 }}" 
+                                    {% if choice.0 in request.GET.amenities %}checked{% endif %}>
+                                <label class="form-check-label" for="amenity_{{ choice.0 }}">
+                                    {{ choice.1 }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        <a href="{% url 'hall_list' %}" class="btn btn-outline-secondary w-100 mt-2">Clear Filters</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hall Listings -->
+        <div class="col-md-9">
+            <div class="row">
+                {% for hall in halls %}
+                <div class="col-md-6 mb-4">
+                    <div class="card hall-card h-100">
+                        {% if hall.primary_image %}
+                            <img src="{{ hall.primary_image.image.url }}" class="card-img-top" alt="{{ hall.hall_name }}">
+                        {% else %}
+                            <img src="{% static 'images/hall-placeholder.jpg' %}" class="card-img-top" alt="{{ hall.hall_name }}" onerror="this.src='https://via.placeholder.com/600x400?text=Hall+Image'">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ hall.hall_name }}</h5>
+                            <p class="card-text hall-capacity">
+                                <i class="fas fa-users"></i> Capacity: {{ hall.capacity }} people
+                            </p>
+                            <p class="card-text hall-price">
+                                <i class="fas fa-rupee-sign"></i> ₹{{ hall.price_per_hour }} per hour
+                            </p>
+                            {% if hall.description %}
+                            <p class="card-text">{{ hall.description|truncatechars:100 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{% url 'hall_detail' hall.hall_id %}" class="btn btn-primary w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> No halls found matching your criteria. Please try different filters.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

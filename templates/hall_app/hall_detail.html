@@ -1,0 +1,352 @@
+{% extends 'hall_app/base.html' %}
+{% load custom_filters %}
+{% load static %}
+
+{% block title %}{{ hall.hall_name }} - Hall Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'hall_list' %}">Halls</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ hall.hall_name }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Hall Images and Details -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div id="hallCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in hall.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ hall.hall_name }}">
+                        </div>
+                        {% empty %}
+                        <div class="carousel-item active">
+                            <img src="{% static 'images/hall-placeholder.jpg' %}" class="d-block w-100" alt="{{ hall.hall_name }}" onerror="this.src='https://via.placeholder.com/800x400?text=Hall+Image'">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#hallCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#hallCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title">{{ hall.hall_name }}</h2>
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <p class="mb-0"><i class="fas fa-users text-primary"></i> Capacity: {{ hall.capacity }} people</p>
+                        </div>
+                        <div>
+                            <p class="mb-0 hall-price"><i class="fas fa-rupee-sign text-primary"></i> ₹{{ hall.price_per_hour }} per hour</p>
+                        </div>
+                    </div>
+                    
+                    {% if hall.description %}
+                    <h5>Description</h5>
+                    <p>{{ hall.description }}</p>
+                    {% endif %}
+                    
+                    <h5>Amenities</h5>
+                    <div class="row">
+                        {% for hall_amenity in amenities %}
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>{{ hall_amenity.amenity.amenity_name }} ({{ hall_amenity.quantity }})</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p>No amenities listed for this hall.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <h5 class="mt-4">Location</h5>
+                    <div class="map-container mt-3 mb-4">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11609823277!2d72.74109995709657!3d19.08219783958221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d648c69!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1620796892146!5m2!1sen!2sin" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                    
+                    <h5>Reviews</h5>
+                    <div class="reviews">
+                        <div class="review-item mb-3 p-3 bg-light rounded">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="{% static 'images/avatar1.jpg' %}" alt="Reviewer" class="rounded-circle me-2" width="40" onerror="this.src='{% static 'images/avatar-placeholder.jpg' %}'">
+                                <div>
+                                    <h6 class="mb-0">Amit Patel</h6>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mb-0">Great venue! We had our wedding reception here and everything was perfect. The staff was very helpful and accommodating.</p>
+                        </div>
+                        
+                        <div class="review-item mb-3 p-3 bg-light rounded">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="{% static 'images/avatar2.jpg' %}" alt="Reviewer" class="rounded-circle me-2" width="40" onerror="this.src='{% static 'images/avatar-placeholder.jpg' %}'">
+                                <div>
+                                    <h6 class="mb-0">Priya Sharma</h6>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mb-0">The hall was beautiful and spacious. The only issue was the parking space was limited. Otherwise, everything was great!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Booking Form -->
+        <div class="col-md-4">
+            <div class="card booking-form sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Book This Hall</h5>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                    <form method="POST" action="{% url 'booking_create' hall.hall_id %}" id="booking-form">
+                        {% csrf_token %}
+                        <input type="hidden" id="price_per_hour" value="{{ hall.price_per_hour }}">
+                        
+                        <div class="mb-3">
+                            <label for="event_date" class="form-label">Event Date</label>
+                            <input type="date" name="event_date" id="event_date" class="form-control datepicker" required>
+                            <small class="text-muted">Select a date that is not already booked</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="total_hours" class="form-label">Number of Hours</label>
+                            <input type="number" name="total_hours" id="total_hours" class="form-control price-input" min="1" value="4" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="catering_service" class="form-label">Catering Service (Optional)</label>
+                            <select name="catering_service" id="catering_service" class="form-control price-input">
+                                <option value="">No catering needed</option>
+                                {% for service in catering_services %}
+                                <option value="{{ service.catering_id }}" data-price="{{ service.price_per_person }}">
+                                    {{ service.service_name }} - ₹{{ service.price_per_person }} per person
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3" id="people-container" style="display: none;">
+                            <label for="total_people" class="form-label">Number of People</label>
+                            <input type="number" name="number_of_people" id="total_people" class="form-control price-input" min="1" value="50">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Total Amount</label>
+                            <input type="hidden" name="total_amount" id="total_amount" value="{{ total_amount }}">
+                            <div class="p-2 bg-light rounded">
+                                <h4 class="mb-0" id="display_total">₹{{ total_amount }}</h4>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Book Now</button>
+                    </form>
+                    {% else %}
+                    <div class="text-center py-3">
+                        <p>Please log in to book this hall</p>
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">Login</a>
+                        <p class="mt-2">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex mb-3">
+                        <i class="fas fa-phone text-primary me-3 mt-1"></i>
+                        <div>
+                            <h6>Phone</h6>
+                            <p class="mb-0">+91 9876543210</p>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <i class="fas fa-envelope text-primary me-3 mt-1"></i>
+                        <div>
+                            <h6>Email</h6>
+                            <p class="mb-0">info@hallmanagement.com</p>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <i class="fas fa-map-marker-alt text-primary me-3 mt-1"></i>
+                        <div>
+                            <h6>Address</h6>
+                            <p class="mb-0">123 Main Street, City Center, Mumbai, Maharashtra 400001</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Availability Calendar -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Availability Calendar</h5>
+                </div>
+                <div class="card-body">
+                    <div id="availability-calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Similar Halls -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Similar Halls You May Like</h3>
+            <hr>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card hall-card">
+                <img src="{% static 'images/hall-placeholder.jpg' %}" class="card-img-top" alt="Similar Hall" onerror="this.src='https://via.placeholder.com/600x400?text=Similar+Hall'">
+                <div class="card-body">
+                    <h5 class="card-title">Grand Ballroom</h5>
+                    <p class="card-text hall-capacity">
+                        <i class="fas fa-users"></i> Capacity: 300 people
+                    </p>
+                    <p class="card-text hall-price">
+                        <i class="fas fa-rupee-sign"></i> ₹5000 per hour
+                    </p>
+                    <a href="#" class="btn btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card hall-card">
+                <img src="{% static 'images/hall-placeholder.jpg' %}" class="card-img-top" alt="Similar Hall" onerror="this.src='https://via.placeholder.com/600x400?text=Similar+Hall'">
+                <div class="card-body">
+                    <h5 class="card-title">Royal Palace</h5>
+                    <p class="card-text hall-capacity">
+                        <i class="fas fa-users"></i> Capacity: 250 people
+                    </p>
+                    <p class="card-text hall-price">
+                        <i class="fas fa-rupee-sign"></i> ₹4500 per hour
+                    </p>
+                    <a href="#" class="btn btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card hall-card">
+                <img src="{% static 'images/hall-placeholder.jpg' %}" class="card-img-top" alt="Similar Hall" onerror="this.src='https://via.placeholder.com/600x400?text=Similar+Hall'">
+                <div class="card-body">
+                    <h5 class="card-title">Celebration Center</h5>
+                    <p class="card-text hall-capacity">
+                        <i class="fas fa-users"></i> Capacity: 350 people
+                    </p>
+                    <p class="card-text hall-price">
+                        <i class="fas fa-rupee-sign"></i> ₹5500 per hour
+                    </p>
+                    <a href="#" class="btn btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date picker with disabled dates
+        const bookedDates = {{ booked_dates|safe }};
+        flatpickr("#event_date", {
+            minDate: "today",
+            disable: bookedDates,
+            dateFormat: "Y-m-d"
+        });
+        
+        // Show/hide number of people field based on catering selection
+        const cateringSelect = document.getElementById('catering_service');
+        const peopleContainer = document.getElementById('people-container');
+        
+        if (cateringSelect) {
+            cateringSelect.addEventListener('change', function() {
+                if (this.value) {
+                    peopleContainer.style.display = 'block';
+                } else {
+                    peopleContainer.style.display = 'none';
+                }
+                calculatePrice();
+            });
+        }
+        
+        // Calculate price function
+        function calculatePrice() {
+            const pricePerHour = parseFloat(document.getElementById('price_per_hour').value) || 0;
+            const totalHours = parseFloat(document.getElementById('total_hours').value) || 0;
+            
+            let totalAmount = pricePerHour * totalHours;
+            
+            // If catering is selected
+            if (cateringSelect && cateringSelect.value) {
+                const totalPeople = parseFloat(document.getElementById('total_people').value) || 0;
+                const selectedOption = cateringSelect.options[cateringSelect.selectedIndex];
+                const pricePerPerson = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                
+                totalAmount += pricePerPerson * totalPeople;
+            }
+            
+            // Update total amount
+            document.getElementById('total_amount').value = totalAmount.toFixed(2);
+            document.getElementById('display_total').textContent = '₹' + totalAmount.toFixed(2);
+        }
+        
+        // Attach event listeners for price calculation
+        const priceInputs = document.querySelectorAll('.price-input');
+        if (priceInputs.length > 0) {
+            priceInputs.forEach(function(input) {
+                input.addEventListener('change', calculatePrice);
+                input.addEventListener('keyup', calculatePrice);
+            });
+        }
+        
+        // Initial calculation
+        calculatePrice();
+    });
+</script>
+{% endblock %}

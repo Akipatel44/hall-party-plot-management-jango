@@ -1,0 +1,239 @@
+{% extends 'hall_app/base.html' %}
+{% load static %}
+
+{% block title %}{{ hall.hall_name }} Details - Hall Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_hall_list' %}">Halls</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ hall.hall_name }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ hall.hall_name }}</h1>
+            <p class="text-muted">Hall Details</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'hall_update' hall.hall_id %}" class="btn btn-primary me-2">
+                <i class="fas fa-edit me-2"></i> Edit Hall
+            </a>
+            <a href="{% url 'hall_delete' hall.hall_id %}" class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i> Delete Hall
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card shadow">
+                <div id="hallCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in images %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ hall.hall_name }}">
+                        </div>
+                        {% empty %}
+                        <div class="carousel-item active">
+                            <img src="{% static 'images/hall-placeholder.jpg' %}" class="d-block w-100" alt="{{ hall.hall_name }}" onerror="this.src='https://via.placeholder.com/800x400?text=Hall+Image'">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#hallCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#hallCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Basic Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Capacity:</th>
+                                    <td>{{ hall.capacity }} people</td>
+                                </tr>
+                                <tr>
+                                    <th>Price per Hour:</th>
+                                    <td>₹{{ hall.price_per_hour }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>
+                                        {% if hall.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Created:</th>
+                                    <td>{{ hall.created_at }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Last Updated:</th>
+                                    <td>{{ hall.updated_at }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Contact Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Address:</th>
+                                    <td>{{ hall.address }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Contact Number:</th>
+                                    <td>{{ hall.contact_number }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <h5>Description</h5>
+                    <p>{{ hall.description|default:"No description provided." }}</p>
+                    
+                    <h5 class="mt-4">Amenities</h5>
+                    <div class="row">
+                        {% for hall_amenity in amenities %}
+                        <div class="col-md-4 mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>{{ hall_amenity.amenity.amenity_name }} ({{ hall_amenity.quantity }})</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p>No amenities listed for this hall.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Hall Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total Bookings:</span>
+                        <span class="fw-bold">{{ bookings.count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Upcoming Bookings:</span>
+                        <span class="fw-bold">{{ bookings.upcoming.count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Past Bookings:</span>
+                        <span class="fw-bold">{{ bookings.past.count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Cancellations:</span>
+                        <span class="fw-bold">{{ bookings.canceled.count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Total Revenue:</span>
+                        <span class="fw-bold">₹{{ total_revenue }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{% url 'hall_update' hall.hall_id %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-edit me-2"></i> Edit Hall Details
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-calendar-alt me-2"></i> View Booking Calendar
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-chart-bar me-2"></i> View Analytics
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-images me-2"></i> Manage Images
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-list-alt me-2"></i> Manage Amenities
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Bookings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Customer</th>
+                                    <th>Event Date</th>
+                                    <th>Hours</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td>{{ booking.booking_id }}</td>
+                                    <td>{{ booking.customer.get_full_name }}</td>
+                                    <td>{{ booking.event_date }}</td>
+                                    <td>{{ booking.total_hours }}</td>
+                                    <td>₹{{ booking.total_amount }}</td>
+                                    <td>
+                                        {% if booking.is_canceled %}
+                                        <span class="badge bg-danger">Canceled</span>
+                                        {% elif booking.event_date < today %}
+                                        <span class="badge bg-secondary">Completed</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No bookings found for this hall.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

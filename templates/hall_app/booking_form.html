@@ -1,0 +1,222 @@
+{% extends 'hall_app/base.html' %}
+{% load static %}
+
+{% block title %}Book {{ hall.hall_name }} - Hall Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'hall_list' %}">Halls</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'hall_detail' hall.hall_id %}">{{ hall.hall_name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Book</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Book {{ hall.hall_name }}</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="hall-info">
+                                <h5>Hall Details</h5>
+                                <p><strong>Name:</strong> {{ hall.hall_name }}</p>
+                                <p><strong>Capacity:</strong> {{ hall.capacity }} people</p>
+                                <p><strong>Price:</strong> ₹{{ hall.price_per_hour }} per hour</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {% if hall.primary_image %}
+                                <img src="{{ hall.primary_image.image.url }}" class="img-fluid rounded" alt="{{ hall.hall_name }}">
+                            {% else %}
+                                <img src="{% static 'images/hall-placeholder.jpg' %}" class="img-fluid rounded" alt="{{ hall.hall_name }}" onerror="this.src='https://via.placeholder.com/400x300?text=Hall+Image'">
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="POST" action="{% url 'booking_create' hall.hall_id %}" id="booking-form">
+                        {% csrf_token %}
+                        <input type="hidden" id="price_per_hour" value="{{ hall.price_per_hour }}">
+                        
+                        <h5 class="mb-3">Booking Details</h5>
+                        
+                        <div class="mb-3">
+                            <label for="event_date" class="form-label">Event Date</label>
+                            <input type="date" name="event_date" id="event_date" class="form-control datepicker" required>
+                            <small class="text-muted">Select a date that is not already booked</small>
+                            {% if booking_form.event_date.errors %}
+                                <div class="text-danger">
+                                    {{ booking_form.event_date.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="total_hours" class="form-label">Number of Hours</label>
+                            <input type="number" name="total_hours" id="total_hours" class="form-control price-input" min="1" value="4" required>
+                            {% if booking_form.total_hours.errors %}
+                                <div class="text-danger">
+                                    {{ booking_form.total_hours.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Additional Services</h5>
+                        
+                        <div class="mb-3">
+                            <label for="catering_service" class="form-label">Catering Service (Optional)</label>
+                            <select name="catering_service" id="catering_service" class="form-control price-input">
+                                <option value="">No catering needed</option>
+                                {% for service in catering_services %}
+                                <option value="{{ service.catering_id }}" data-price="{{ service.price_per_person }}">
+                                    {{ service.service_name }} - ₹{{ service.price_per_person }} per person
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3" id="people-container" style="display: none;">
+                            <label for="total_people" class="form-label">Number of People</label>
+                            <input type="number" name="number_of_people" id="total_people" class="form-control price-input" min="1" value="50">
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Special Requests (Optional)</h5>
+                        
+                        <div class="mb-3">
+                            <textarea name="special_requests" class="form-control" rows="3" placeholder="Any special requests or requirements for your event?"></textarea>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Payment Summary</h5>
+                        
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Hall Rental (₹{{ hall.price_per_hour }} x <span id="hours-display">4</span> hours)</span>
+                                    <span id="hall-cost">₹{{ hall.price_per_hour|multiply:4 }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2" id="catering-row" style="display: none;">
+                                    <span>Catering (<span id="catering-name"></span> x <span id="people-display">50</span> people)</span>
+                                    <span id="catering-cost">₹0</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total Amount</strong>
+                                    <strong id="display_total">₹{{ hall.price_per_hour|multiply:4 }}</strong>
+                                </div>
+                                <input type="hidden" name="total_amount" id="total_amount" value="{{ hall.price_per_hour|multiply:4 }}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#" class="text-decoration-none">Terms and Conditions</a> and <a href="#" class="text-decoration-none">Cancellation Policy</a>
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Proceed to Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date picker with disabled dates
+        const bookedDates = {{ booked_dates|safe }};
+        
+        // Show/hide number of people field based on catering selection
+        const cateringSelect = document.getElementById('catering_service');
+        const peopleContainer = document.getElementById('people-container');
+        const cateringRow = document.getElementById('catering-row');
+        
+        if (cateringSelect) {
+            cateringSelect.addEventListener('change', function() {
+                if (this.value) {
+                    peopleContainer.style.display = 'block';
+                    cateringRow.style.display = 'flex';
+                    
+                    // Update catering name in summary
+                    const selectedOption = cateringSelect.options[cateringSelect.selectedIndex];
+                    document.getElementById('catering-name').textContent = selectedOption.text.split(' - ')[0];
+                } else {
+                    peopleContainer.style.display = 'none';
+                    cateringRow.style.display = 'none';
+                }
+                calculatePrice();
+            });
+        }
+        
+        // Update hours display when hours change
+        const totalHoursInput = document.getElementById('total_hours');
+        if (totalHoursInput) {
+            totalHoursInput.addEventListener('change', function() {
+                document.getElementById('hours-display').textContent = this.value;
+                calculatePrice();
+            });
+            totalHoursInput.addEventListener('keyup', function() {
+                document.getElementById('hours-display').textContent = this.value;
+                calculatePrice();
+            });
+        }
+        
+        // Update people display when people count changes
+        const totalPeopleInput = document.getElementById('total_people');
+        if (totalPeopleInput) {
+            totalPeopleInput.addEventListener('change', function() {
+                document.getElementById('people-display').textContent = this.value;
+                calculatePrice();
+            });
+            totalPeopleInput.addEventListener('keyup', function() {
+                document.getElementById('people-display').textContent = this.value;
+                calculatePrice();
+            });
+        }
+        
+        // Calculate price function
+        function calculatePrice() {
+            const pricePerHour = parseFloat(document.getElementById('price_per_hour').value) || 0;
+            const totalHours = parseFloat(document.getElementById('total_hours').value) || 0;
+            
+            let hallCost = pricePerHour * totalHours;
+            document.getElementById('hall-cost').textContent = '₹' + hallCost.toFixed(2);
+            
+            let totalAmount = hallCost;
+            
+            // If catering is selected
+            if (cateringSelect && cateringSelect.value) {
+                const totalPeople = parseFloat(document.getElementById('total_people').value) || 0;
+                const selectedOption = cateringSelect.options[cateringSelect.selectedIndex];
+                const pricePerPerson = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                
+                const cateringCost = pricePerPerson * totalPeople;
+                document.getElementById('catering-cost').textContent = '₹' + cateringCost.toFixed(2);
+                
+                totalAmount += cateringCost;
+            }
+            
+            // Update total amount
+            document.getElementById('total_amount').value = totalAmount.toFixed(2);
+            document.getElementById('display_total').textContent = '₹' + totalAmount.toFixed(2);
+        }
+        
+        // Initial calculation
+        calculatePrice();
+    });
+</script>
+{% endblock %}

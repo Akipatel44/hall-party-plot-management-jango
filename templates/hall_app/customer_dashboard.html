@@ -1,0 +1,242 @@
+{% extends 'hall_app/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Hall Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Welcome, {{ user.first_name|default:user.username }}</h1>
+            <p class="text-muted">Manage your bookings and account</p>
+        </div>
+    </div>
+    
+    <!-- Dashboard Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="dashboard-stats">
+                <h5>Upcoming Bookings</h5>
+                <h3>{{ upcoming_bookings.count }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="dashboard-stats">
+                <h5>Past Bookings</h5>
+                <h3>{{ past_bookings.count }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="dashboard-stats">
+                <h5>Notifications</h5>
+                <h3>{{ notifications.count }}</h3>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notifications -->
+    {% if notifications %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Recent Notifications</h5>
+                        <a href="#" class="text-decoration-none">View All</a>
+                    </div>
+                    <div class="list-group">
+                        {% for notification in notifications %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ notification.get_notification_type_display }}</h6>
+                                <small>{{ notification.notification_date }}</small>
+                            </div>
+                            <p class="mb-1">{{ notification.message }}</p>
+                            <div class="text-end">
+                                <a href="{% url 'mark_notification_read' notification.notification_id %}" class="btn btn-sm btn-outline-primary">Mark as Read</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Upcoming Bookings -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Upcoming Bookings</h5>
+                        <a href="#" class="btn btn-primary btn-sm">Book a Hall</a>
+                    </div>
+                    {% if upcoming_bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Hall</th>
+                                    <th>Event Date</th>
+                                    <th>Hours</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in upcoming_bookings %}
+                                <tr>
+                                    <td>{{ booking.booking_id }}</td>
+                                    <td>{{ booking.hall.hall_name }}</td>
+                                    <td>{{ booking.event_date }}</td>
+                                    <td>{{ booking.total_hours }}</td>
+                                    <td>₹{{ booking.total_amount }}</td>
+                                    <td>
+                                        <a href="{% url 'booking_confirmation' booking.booking_id %}" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="{% url 'booking_cancel' booking.booking_id %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <img src="{% static 'images/no-bookings.svg' %}" alt="No Bookings" class="img-fluid mb-3" style="max-height: 150px;" onerror="this.src='https://via.placeholder.com/150x150?text=No+Bookings'">
+                        <p class="text-muted">You have no upcoming bookings.</p>
+                        <a href="{% url 'hall_list' %}" class="btn btn-primary">Book a Hall</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Past Bookings -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Past Bookings</h5>
+                        <a href="#" class="text-decoration-none">View All</a>
+                    </div>
+                    {% if past_bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Hall</th>
+                                    <th>Event Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in past_bookings %}
+                                <tr>
+                                    <td>{{ booking.booking_id }}</td>
+                                    <td>{{ booking.hall.hall_name }}</td>
+                                    <td>{{ booking.event_date }}</td>
+                                    <td>₹{{ booking.total_amount }}</td>
+                                    <td>
+                                        {% if booking.is_canceled %}
+                                        <span class="badge bg-danger">Canceled</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Completed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'booking_confirmation' booking.booking_id %}" class="btn btn-sm btn-outline-primary">View</a>
+                                        {% if not booking.is_canceled and not booking.feedback %}
+                                        <a href="{% url 'feedback_create' booking.booking_id %}" class="btn btn-sm btn-outline-secondary">Leave Feedback</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-3">You have no past bookings.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Payments -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card dashboard-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Recent Payments</h5>
+                        <a href="#" class="text-decoration-none">View All</a>
+                    </div>
+                    {% if recent_payments %}
+                    <div class="list-group">
+                        {% for payment in recent_payments %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Payment for {{ payment.booking.hall.hall_name }}</h6>
+                                <small>{{ payment.payment_date }}</small>
+                            </div>
+                            <p class="mb-1">Amount: ₹{{ payment.amount_paid }}</p>
+                            <small>Payment Method: {{ payment.get_payment_method_display }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-3">No recent payments.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Account Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card dashboard-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Account Settings</h5>
+                    <div class="list-group">
+                        <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-user me-2"></i> Profile Settings</h6>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <p class="mb-1 text-muted">Update your personal information</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-lock me-2"></i> Change Password</h6>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <p class="mb-1 text-muted">Update your password</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-bell me-2"></i> Notification Settings</h6>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <p class="mb-1 text-muted">Manage your notification preferences</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-credit-card me-2"></i> Payment Methods</h6>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <p class="mb-1 text-muted">Manage your payment methods</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
